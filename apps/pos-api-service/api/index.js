@@ -41,7 +41,15 @@ async function getApp() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
+
+    // Load Swagger assets from CDN so they render on Vercel serverless
     SwaggerModule.setup('api/docs', app, document, {
+      customCssUrl:
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui.min.css',
+      customJs: [
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-bundle.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.18.2/swagger-ui-standalone-preset.js',
+      ],
       swaggerOptions: {
         persistAuthorization: true,
       },
