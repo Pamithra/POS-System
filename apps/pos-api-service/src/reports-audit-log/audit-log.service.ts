@@ -36,6 +36,7 @@ const EXPORT_ROW_LIMIT = 10_000;
 
 // Sentinel values in branchName that mean "not scoped to one branch"
 const NON_BRANCH_NAMES = new Set(['All', 'All Branches', '']);
+const APP_TIMEZONE = process.env.APP_TIMEZONE || 'Asia/Colombo';
 
 @Injectable()
 export class ReportsAuditLogService {
@@ -148,6 +149,7 @@ export class ReportsAuditLogService {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true,
+        timeZone: APP_TIMEZONE,
       }),
       createdAt: log.created_at.toISOString(),
     }));
@@ -178,11 +180,12 @@ export class ReportsAuditLogService {
 
     const rows = logs.map((log) => {
       const dt = new Date(log.created_at);
-      const date = dt.toISOString().slice(0, 10);
+      const date = dt.toLocaleDateString('en-CA', { timeZone: APP_TIMEZONE });
       const time = dt.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true,
+        timeZone: APP_TIMEZONE,
       });
 
       const escape = (val: string | null | undefined) =>
@@ -290,11 +293,12 @@ export class ReportsAuditLogService {
       }
 
       const dt = new Date(log.created_at);
-      const date = dt.toISOString().slice(0, 10);
+      const date = dt.toLocaleDateString('en-CA', { timeZone: APP_TIMEZONE });
       const time = dt.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: true,
+        timeZone: APP_TIMEZONE,
       });
 
       drawRow(
