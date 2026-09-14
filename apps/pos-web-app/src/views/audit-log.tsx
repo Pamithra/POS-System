@@ -121,7 +121,7 @@ export default function AuditLogView() {
     const pagination = data?.pagination;
 
     return (
-      <div className="p-6 lg:p-8 flex flex-col gap-5 max-w-[1400px]">
+        <div className="p-4 sm:p-6 lg:p-8 flex flex-col gap-5 w-full max-w-[1400px] min-w-0 mx-auto">
         {/* ── Header ──────────────────────────────────────────────────── */}
         <div className="flex items-start justify-between flex-wrap gap-3">
           <div>
@@ -138,112 +138,109 @@ export default function AuditLogView() {
           </span>
         </div>
 
-        {/* ── Filter bar ──────────────────────────────────────────────── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1 min-w-[180px] flex-1">
-              <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
-                Search by user
-              </label>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-300" />
-                <Input
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Username"
-                  className="h-9 pl-8 text-[13px] rounded-lg"
-                />
-              </div>
-            </div>
+            {/* ── Filter bar ──────────────────────────────────────────────── */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 w-full">
+                <div className="flex flex-wrap items-end gap-3 w-full">
+                    <div className="flex flex-col gap-1 min-w-[160px] flex-1">
+                        <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+                            Search by user
+                        </label>
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-300" />
+                            <Input
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Filter by username..."
+                                className="pl-8 h-9 text-[13px] rounded-lg w-full"
+                            />
+                        </div>
+                    </div>
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
-                Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-9 w-48 justify-start text-left font-normal text-[13px] rounded-lg border-gray-200"
-                  >
-                    <CalendarIcon className="mr-2 h-3.5 w-3.5 text-gray-400 flex-shrink-0" />
-                    <span className="truncate">
-                      {date ? format(date, "MMMM do, yyyy") : "All dates"}
-                    </span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-auto p-0 rounded-xl border border-gray-200 bg-white shadow-xl z-[200]"
-                  align="start"
-                >
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    disabled={(d) => d > new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
+                    <div className="flex flex-col gap-1 min-w-[140px] flex-1 sm:flex-initial">
+                        <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+                            Date
+                        </label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className={cn(
+                                        "h-9 w-full sm:w-44 justify-start text-left text-[13px] font-normal rounded-lg",
+                                        !date && "text-gray-400"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                                    {date ? format(date, "PPP") : "All Dates"}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0 z-[200] bg-white text-gray-900 border border-gray-100 shadow-xl rounded-xl">
+                                <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    onSelect={setDate}
+                                    initialFocus
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
 
-            <div className="flex flex-col gap-1">
-              <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
-                Action
-              </label>
-              <Select
-                value={action || ALL_ACTIONS_VALUE}
-                onValueChange={(v) =>
-                  setAction(v === ALL_ACTIONS_VALUE ? "" : (v as AuditAction))
-                }
-              >
-                <SelectTrigger className="h-9 w-40 text-[13px] rounded-lg">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ALL_ACTIONS_VALUE}>All Actions</SelectItem>
-                  {AUDIT_ACTION_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                    <div className="flex flex-col gap-1 min-w-[140px] flex-1 sm:flex-initial">
+                        <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+                            Action
+                        </label>
+                        <Select
+                            value={action || ALL_ACTIONS_VALUE}
+                            onValueChange={(val) =>
+                                setAction(val === ALL_ACTIONS_VALUE ? "" : (val as AuditAction))
+                            }
+                        >
+                            <SelectTrigger className="h-9 w-full sm:w-40 text-[13px] rounded-lg">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={ALL_ACTIONS_VALUE}>All Actions</SelectItem>
+                                {AUDIT_ACTION_OPTIONS.map((opt) => (
+                                    <SelectItem key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-            <div className="flex flex-col gap-1 min-w-[160px]">
-              <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
-                Report Type
-              </label>
-              <Input
-                value={reportType}
-                onChange={(e) => setReportType(e.target.value)}
-                placeholder="All Report Types"
-                className="h-9 text-[13px] rounded-lg"
-              />
-            </div>
+                    <div className="flex flex-col gap-1 min-w-[140px] flex-1 sm:flex-initial">
+                        <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+                            Report Type
+                        </label>
+                        <Input
+                            value={reportType}
+                            onChange={(e) => setReportType(e.target.value)}
+                            placeholder="All Report Types"
+                            className="h-9 text-[13px] rounded-lg w-full"
+                        />
+                    </div>
 
-            <div className="flex items-end gap-2 ml-auto">
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9 rounded-lg"
-                onClick={handleReset}
-                title="Reset filters"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                onClick={handleGenerate}
-                disabled={isFetching}
-                className="h-9 rounded-lg"
-              >
-                {isFetching && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-                Generate
-              </Button>
+                    <div className="flex items-end gap-2 w-full sm:w-auto sm:ml-auto justify-end pt-2 sm:pt-0">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9 rounded-lg flex-shrink-0"
+                            onClick={handleReset}
+                            title="Reset filters"
+                        >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                            onClick={handleGenerate}
+                            disabled={isFetching}
+                            className="h-9 rounded-lg"
+                        >
+                            {isFetching && <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />}
+                            Generate
+                        </Button>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
 
         {/* ── Activity Log table ─────────────────────────────────────── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -304,8 +301,8 @@ export default function AuditLogView() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
+                <Table className="min-w-[800px]">
+                    <TableHeader>
                   <TableRow>
                     <TableHead className="text-[11px] uppercase tracking-wide text-gray-400">
                       User

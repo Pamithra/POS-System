@@ -119,7 +119,7 @@ function SectionCard({
     children:  React.ReactNode;
 }) {
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4 mb-5 break-inside-avoid">            <div className="flex items-center gap-2.5">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-4">           <div className="flex items-center gap-2.5">
                 <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBg}`}>
                     <Icon className={`h-3.5 w-3.5 ${iconColor}`} />
                 </div>
@@ -323,372 +323,381 @@ export default function KpiSettingsView() {
     }
 
     return (
-      <div className="p-6 lg:p-8 flex flex-col gap-5 max-w-[1400px]">
-        {/* ── Header ──────────────────────────────────────────────────── */}
-        <div className="flex items-start justify-between flex-wrap gap-3">
-          <div>
-            <h1 className="text-[20px] font-bold text-gray-900">
-              KPI Settings
-            </h1>
-            <p className="text-[13px] text-gray-400 mt-0.5">
-              Configure sales targets, notification rules, and report
-              preferences
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-semibold border border-emerald-100">
-            <ShieldCheck className="h-3.5 w-3.5" />
-            {isAdmin ? "Admin" : "Manager"}
-          </span>
-        </div>
-
-        <div className="columns-1 lg:columns-2 gap-5">
-          {/* ── Sales Targets ──────────────────────────────────────── */}
-          <SectionCard
-            icon={Target}
-            iconBg="bg-blue-50"
-            iconColor="text-blue-600"
-            title="Sales Targets"
-          >
-            <div className="flex flex-col gap-3">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-                Monthly Targets
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                {isAdmin && (
-                  <Field label="All Branches (Monthly)">
-                    <Input
-                      type="number"
-                      inputMode="decimal"
-                      value={
-                        salesTargets.monthlyByBranch[ALL_BRANCHES_ID] ?? ""
-                      }
-                      onChange={(e) =>
-                        setSalesTargets((s) => ({
-                          ...s,
-                          monthlyByBranch: {
-                            ...s.monthlyByBranch,
-                            [ALL_BRANCHES_ID]: e.target.value,
-                          },
-                        }))
-                      }
-                    />
-                  </Field>
-                )}
-                {branches.map((b) => (
-                  <Field key={b.id} label={`${b.name} (Monthly)`}>
-                    <Input
-                      type="number"
-                      inputMode="decimal"
-                      value={salesTargets.monthlyByBranch[b.id] ?? ""}
-                      onChange={(e) =>
-                        setSalesTargets((s) => ({
-                          ...s,
-                          monthlyByBranch: {
-                            ...s.monthlyByBranch,
-                            [b.id]: e.target.value,
-                          },
-                        }))
-                      }
-                    />
-                  </Field>
-                ))}
-              </div>
-
-              {isAdmin && (
-                <>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-1">
-                    Weekly Targets
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Field label="All Branches (Weekly)">
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        value={salesTargets.weeklyAll}
-                        onChange={(e) =>
-                          setSalesTargets((s) => ({
-                            ...s,
-                            weeklyAll: e.target.value,
-                          }))
-                        }
-                      />
-                    </Field>
-                    <Field
-                      label="Daily Target (All)"
-                      sublabel="Auto-calc from monthly"
-                    >
-                      <Input
-                        type="text"
-                        disabled
-                        value={
-                          dailyAutoTarget
-                            ? dailyAutoTarget.toLocaleString()
-                            : ""
-                        }
-                        className="bg-gray-50 text-gray-400"
-                      />
-                    </Field>
-                  </div>
-                </>
-              )}
-            </div>
-          </SectionCard>
-
-          {/* ── Profit Margin Targets ──────────────────────────────── */}
-          <SectionCard
-            icon={Percent}
-            iconBg="bg-emerald-50"
-            iconColor="text-emerald-600"
-            title="Profit Margin Targets"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Target Gross Margin (%)">
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  value={margin.targetGrossMargin}
-                  onChange={(e) =>
-                    setMargin((m) => ({
-                      ...m,
-                      targetGrossMargin: e.target.value,
-                    }))
-                  }
-                />
-              </Field>
-              <Field label="Target Net Margin (%)">
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  value={margin.targetNetMargin}
-                  onChange={(e) =>
-                    setMargin((m) => ({
-                      ...m,
-                      targetNetMargin: e.target.value,
-                    }))
-                  }
-                />
-              </Field>
-            </div>
-          </SectionCard>
-
-          {/* ── Inventory Thresholds ───────────────────────────────── */}
-          <SectionCard
-            icon={PackageSearch}
-            iconBg="bg-orange-50"
-            iconColor="text-orange-600"
-            title="Inventory Thresholds"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Default Reorder Level">
-                <Input
-                  type="number"
-                  value={inventory.defaultReorderLevel}
-                  onChange={(e) =>
-                    setInventory((v) => ({
-                      ...v,
-                      defaultReorderLevel: e.target.value,
-                    }))
-                  }
-                />
-              </Field>
-              <Field
-                label="Critical Stock Level"
-                sublabel="Triggers urgent alert"
-              >
-                <Input
-                  type="number"
-                  value={inventory.criticalStockLevel}
-                  onChange={(e) =>
-                    setInventory((v) => ({
-                      ...v,
-                      criticalStockLevel: e.target.value,
-                    }))
-                  }
-                />
-              </Field>
-              <Field
-                label="Zero-Sales Alert (hours)"
-                sublabel="Alert if product has no sales"
-              >
-                <Input
-                  type="number"
-                  value={inventory.zeroSalesHours}
-                  onChange={(e) =>
-                    setInventory((v) => ({
-                      ...v,
-                      zeroSalesHours: e.target.value,
-                    }))
-                  }
-                />
-              </Field>
-            </div>
-          </SectionCard>
-
-          {/* ── Notification Rules ─────────────────────────────────── */}
-          <SectionCard
-            icon={Bell}
-            iconBg="bg-violet-50"
-            iconColor="text-violet-600"
-            title="Notification Rules"
-          >
-            <div className="flex flex-col divide-y divide-gray-50">
-              {NOTIFICATION_RULE_FIELDS.map((field) => (
-                <div
-                  key={field.key}
-                  className="flex items-center justify-between gap-3 py-2.5 first:pt-0"
-                >
-                  <div>
-                    <p className="text-[12.5px] font-medium text-gray-700">
-                      {field.label}
+        <div className="p-4 sm:p-6 lg:p-8 flex flex-col gap-5 w-full min-w-0">
+            {/* ── Header ──────────────────────────────────────────────────── */}
+            <div className="flex items-start justify-between flex-wrap gap-3">
+                <div>
+                    <h1 className="text-[20px] font-bold text-gray-900">
+                        KPI Settings
+                    </h1>
+                    <p className="text-[13px] text-gray-400 mt-0.5">
+                        Configure sales targets, notification rules, and report
+                        preferences
                     </p>
-                    <p className="text-[11px] text-gray-400">
-                      {field.description}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={
-                      notifications[
-                        field.key as keyof NotificationForm
-                      ] as boolean
-                    }
-                    onCheckedChange={(checked) =>
-                      setNotifications((n) => ({ ...n, [field.key]: checked }))
-                    }
-                  />
                 </div>
-              ))}
-
-              <div className="pt-3 flex flex-col gap-1.5">
-                <label className="text-[12px] font-medium text-gray-600">
-                  Notification Check Frequency
-                </label>
-                <Select
-                  value={String(notifications.check_frequency_minutes)}
-                  onValueChange={(v) =>
-                    setNotifications((n) => ({
-                      ...n,
-                      check_frequency_minutes: Number(
-                        v,
-                      ) as CheckFrequencyMinutes,
-                    }))
-                  }
-                >
-                  <SelectTrigger className="h-9 text-[13px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white text-gray-900 border border-gray-100 shadow-xl rounded-xl z-[200]">
-                    {CHECK_FREQUENCY_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={String(opt.value)}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <p className="text-[11px] text-gray-400">
-                  How often the system checks alert conditions
-                </p>
-              </div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[11px] font-semibold border border-emerald-100">
+            <ShieldCheck className="h-3.5 w-3.5" />
+                    {isAdmin ? "Admin" : "Manager"}
+          </span>
             </div>
-          </SectionCard>
 
-          {/* ── Report Default Settings ────────────────────────────── */}
-          <SectionCard
-            icon={FileSliders}
-            iconBg="bg-blue-50"
-            iconColor="text-blue-600"
-            title="Report Default Settings"
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <Field label="Default Date Range">
-                <Select
-                  value={reportDefaults.defaultDateRange}
-                  onValueChange={(v) =>
-                    setReportDefaults((r) => ({
-                      ...r,
-                      defaultDateRange: v as DefaultDateRange,
-                    }))
-                  }
-                >
-                  <SelectTrigger className="h-9 text-[13px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DATE_RANGE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+            {/* ── 2-Column Responsive Container (Fills Full Width on Zoom Out) ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 w-full items-start">
 
-              <Field label="Default Branch View">
-                <Select
-                  value={reportDefaults.defaultBranchView}
-                  onValueChange={(v) =>
-                    setReportDefaults((r) => ({ ...r, defaultBranchView: v }))
-                  }
+                {/* ══════════ LEFT COLUMN ══════════ */}
+                <div className="flex flex-col gap-5 w-full">
+                    {/* 1. Sales Targets */}
+                    <SectionCard
+                        icon={Target}
+                        iconBg="bg-blue-50"
+                        iconColor="text-blue-600"
+                        title="Sales Targets"
+                    >
+                        <div className="flex flex-col gap-3">
+                            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
+                                Monthly Targets
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {isAdmin && (
+                                    <Field label="All Branches (Monthly)">
+                                        <Input
+                                            type="number"
+                                            inputMode="decimal"
+                                            value={
+                                                salesTargets.monthlyByBranch[ALL_BRANCHES_ID] ?? ""
+                                            }
+                                            onChange={(e) =>
+                                                setSalesTargets((s) => ({
+                                                    ...s,
+                                                    monthlyByBranch: {
+                                                        ...s.monthlyByBranch,
+                                                        [ALL_BRANCHES_ID]: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                        />
+                                    </Field>
+                                )}
+                                {branches.map((b) => (
+                                    <Field key={b.id} label={`${b.name} (Monthly)`}>
+                                        <Input
+                                            type="number"
+                                            inputMode="decimal"
+                                            value={salesTargets.monthlyByBranch[b.id] ?? ""}
+                                            onChange={(e) =>
+                                                setSalesTargets((s) => ({
+                                                    ...s,
+                                                    monthlyByBranch: {
+                                                        ...s.monthlyByBranch,
+                                                        [b.id]: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                        />
+                                    </Field>
+                                ))}
+                            </div>
+
+                            {isAdmin && (
+                                <>
+                                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-1">
+                                        Weekly Targets
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <Field label="All Branches (Weekly)">
+                                            <Input
+                                                type="number"
+                                                inputMode="decimal"
+                                                value={salesTargets.weeklyAll}
+                                                onChange={(e) =>
+                                                    setSalesTargets((s) => ({
+                                                        ...s,
+                                                        weeklyAll: e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                        </Field>
+                                        <Field
+                                            label="Daily Target (All)"
+                                            sublabel="Auto-calc from monthly"
+                                        >
+                                            <Input
+                                                type="text"
+                                                disabled
+                                                value={
+                                                    dailyAutoTarget
+                                                        ? dailyAutoTarget.toLocaleString()
+                                                        : ""
+                                                }
+                                                className="bg-gray-50 text-gray-400"
+                                            />
+                                        </Field>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </SectionCard>
+
+                    {/* 2. Report Default Settings */}
+                    <SectionCard
+                        icon={FileSliders}
+                        iconBg="bg-blue-50"
+                        iconColor="text-blue-600"
+                        title="Report Default Settings"
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Field label="Default Date Range">
+                                <Select
+                                    value={reportDefaults.defaultDateRange}
+                                    onValueChange={(v) =>
+                                        setReportDefaults((r) => ({
+                                            ...r,
+                                            defaultDateRange: v as DefaultDateRange,
+                                        }))
+                                    }
+                                >
+                                    <SelectTrigger className="h-9 text-[13px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {DATE_RANGE_OPTIONS.map((opt) => (
+                                            <SelectItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+
+                            <Field label="Default Branch View">
+                                <Select
+                                    value={reportDefaults.defaultBranchView}
+                                    onValueChange={(v) =>
+                                        setReportDefaults((r) => ({ ...r, defaultBranchView: v }))
+                                    }
+                                >
+                                    <SelectTrigger className="h-9 text-[13px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {isAdmin && (
+                                            <SelectItem value="ALL">All Branches</SelectItem>
+                                        )}
+                                        {branches.map((b) => (
+                                            <SelectItem key={b.id} value={String(b.id)}>
+                                                {b.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </Field>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3 pt-1">
+                            <div>
+                                <p className="text-[12.5px] font-medium text-gray-700">
+                                    Show target progress on Dashboard
+                                </p>
+                                <p className="text-[11px] text-gray-400">
+                                    Display monthly target progress bar
+                                </p>
+                            </div>
+                            <Switch
+                                checked={reportDefaults.showTargetProgress}
+                                onCheckedChange={(checked) =>
+                                    setReportDefaults((r) => ({
+                                        ...r,
+                                        showTargetProgress: checked,
+                                    }))
+                                }
+                            />
+                        </div>
+                    </SectionCard>
+                </div>
+
+                {/* ══════════ RIGHT COLUMN ══════════ */}
+                <div className="flex flex-col gap-5 w-full">
+                    {/* 3. Profit Margin Targets */}
+                    <SectionCard
+                        icon={Percent}
+                        iconBg="bg-emerald-50"
+                        iconColor="text-emerald-600"
+                        title="Profit Margin Targets"
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Field label="Target Gross Margin (%)">
+                                <Input
+                                    type="number"
+                                    inputMode="decimal"
+                                    value={margin.targetGrossMargin}
+                                    onChange={(e) =>
+                                        setMargin((m) => ({
+                                            ...m,
+                                            targetGrossMargin: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Field>
+                            <Field label="Target Net Margin (%)">
+                                <Input
+                                    type="number"
+                                    inputMode="decimal"
+                                    value={margin.targetNetMargin}
+                                    onChange={(e) =>
+                                        setMargin((m) => ({
+                                            ...m,
+                                            targetNetMargin: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Field>
+                        </div>
+                    </SectionCard>
+
+                    {/* 4. Inventory Thresholds (Now sits directly under Profit Margins!) */}
+                    <SectionCard
+                        icon={PackageSearch}
+                        iconBg="bg-orange-50"
+                        iconColor="text-orange-600"
+                        title="Inventory Thresholds"
+                    >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <Field label="Default Reorder Level">
+                                <Input
+                                    type="number"
+                                    value={inventory.defaultReorderLevel}
+                                    onChange={(e) =>
+                                        setInventory((v) => ({
+                                            ...v,
+                                            defaultReorderLevel: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Field>
+                            <Field
+                                label="Critical Stock Level"
+                                sublabel="Triggers urgent alert"
+                            >
+                                <Input
+                                    type="number"
+                                    value={inventory.criticalStockLevel}
+                                    onChange={(e) =>
+                                        setInventory((v) => ({
+                                            ...v,
+                                            criticalStockLevel: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Field>
+                            <Field
+                                label="Zero-Sales Alert (hours)"
+                                sublabel="Alert if product has no sales"
+                            >
+                                <Input
+                                    type="number"
+                                    value={inventory.zeroSalesHours}
+                                    onChange={(e) =>
+                                        setInventory((v) => ({
+                                            ...v,
+                                            zeroSalesHours: e.target.value,
+                                        }))
+                                    }
+                                />
+                            </Field>
+                        </div>
+                    </SectionCard>
+
+                    {/* 5. Notification Rules */}
+                    <SectionCard
+                        icon={Bell}
+                        iconBg="bg-violet-50"
+                        iconColor="text-violet-600"
+                        title="Notification Rules"
+                    >
+                        <div className="flex flex-col divide-y divide-gray-50">
+                            {NOTIFICATION_RULE_FIELDS.map((field) => (
+                                <div
+                                    key={field.key}
+                                    className="flex items-center justify-between gap-3 py-2.5 first:pt-0"
+                                >
+                                    <div>
+                                        <p className="text-[12.5px] font-medium text-gray-700">
+                                            {field.label}
+                                        </p>
+                                        <p className="text-[11px] text-gray-400">
+                                            {field.description}
+                                        </p>
+                                    </div>
+                                    <Switch
+                                        checked={
+                                            notifications[
+                                                field.key as keyof NotificationForm
+                                                ] as boolean
+                                        }
+                                        onCheckedChange={(checked) =>
+                                            setNotifications((n) => ({ ...n, [field.key]: checked }))
+                                        }
+                                    />
+                                </div>
+                            ))}
+
+                            <div className="pt-3 flex flex-col gap-1.5">
+                                <label className="text-[12px] font-medium text-gray-600">
+                                    Notification Check Frequency
+                                </label>
+                                <Select
+                                    value={String(notifications.check_frequency_minutes)}
+                                    onValueChange={(v) =>
+                                        setNotifications((n) => ({
+                                            ...n,
+                                            check_frequency_minutes: Number(
+                                                v,
+                                            ) as CheckFrequencyMinutes,
+                                        }))
+                                    }
+                                >
+                                    <SelectTrigger className="h-9 text-[13px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-white text-gray-900 border border-gray-100 shadow-xl rounded-xl z-[200]">
+                                        {CHECK_FREQUENCY_OPTIONS.map((opt) => (
+                                            <SelectItem key={opt.value} value={String(opt.value)}>
+                                                {opt.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-[11px] text-gray-400">
+                                    How often the system checks alert conditions
+                                </p>
+                            </div>
+                        </div>
+                    </SectionCard>
+                </div>
+
+            </div>
+
+            {/* ── Save / Cancel ───────────────────────────────────────────── */}
+            <div className="flex items-center gap-3 pt-2">
+                <Button
+                    onClick={handleSaveAll}
+                    disabled={saveMutation.isPending}
+                    className="rounded-xl bg-blue-600 text-white hover:bg-blue-700"
                 >
-                  <SelectTrigger className="h-9 text-[13px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {isAdmin && (
-                      <SelectItem value="ALL">All Branches</SelectItem>
+                    {saveMutation.isPending && (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
                     )}
-                    {branches.map((b) => (
-                      <SelectItem key={b.id} value={String(b.id)}>
-                        {b.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </Field>
+                    Save All Changes
+                </Button>
+                <Button
+                    variant="outline"
+                    onClick={hydrateFromServer}
+                    disabled={saveMutation.isPending}
+                    className="rounded-xl"
+                >
+                    Cancel
+                </Button>
             </div>
-
-            <div className="flex items-center justify-between gap-3 pt-1">
-              <div>
-                <p className="text-[12.5px] font-medium text-gray-700">
-                  Show target progress on Dashboard
-                </p>
-                <p className="text-[11px] text-gray-400">
-                  Display monthly target progress bar
-                </p>
-              </div>
-              <Switch
-                checked={reportDefaults.showTargetProgress}
-                onCheckedChange={(checked) =>
-                  setReportDefaults((r) => ({
-                    ...r,
-                    showTargetProgress: checked,
-                  }))
-                }
-              />
-            </div>
-          </SectionCard>
         </div>
-
-        {/* ── Save / Cancel ───────────────────────────────────────────── */}
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={handleSaveAll}
-            disabled={saveMutation.isPending}
-            className="rounded-xl bg-blue-600 text-white hover:bg-blue-700"
-          >
-            {saveMutation.isPending && (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            )}
-            Save All Changes
-          </Button>
-          <Button
-            variant="outline"
-            onClick={hydrateFromServer}
-            disabled={saveMutation.isPending}
-            className="rounded-xl"
-          >
-            Cancel
-          </Button>
-        </div>
-      </div>
     );
 }

@@ -24,7 +24,8 @@
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:seed:transactions": "ts-node prisma/seed-transactions.ts"
   },
   "dependencies": {
     "@nestjs/jwt": "^11.0.2",
